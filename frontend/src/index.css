@@ -14,3 +14,15 @@
 .reveal {
   animation: reveal 1s ease-out;
 }
+@media (max-width: 768px) {
+  /* Adjust font size for smaller screens */
+  .quote-text {
+    display: none;  /* Adjust as needed */
+  }
+
+  /* Optionally disable animation on mobile */
+  .quote-animation {
+    display: none; /* Hide animation */
+  }
+}
+
