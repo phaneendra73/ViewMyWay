@@ -62,7 +62,7 @@ function Nav() {
           <div
             className={`lg:flex lg:items-center lg:space-x-6 fixed lg:static top-0 right-0 transform ${
               isOpen ? 'translate-x-0' : 'translate-x-full'
-            } transition-transform duration-500 ease-in-out bg-black lg:bg-transparent w-3/4 lg:w-auto h-screen lg:h-auto flex-col lg:flex-row items-start lg:items-center p-5 lg:p-0 z-10 ${
+            } transition-transform duration-500 ease-in-out bg-black lg:bg-transparent w-1/2 lg:w-auto h-screen lg:h-auto flex-col lg:flex-row items-start lg:items-center p-5 lg:p-0 z-10 ${
               isOpen || !isOpen && 'lg:visible lg:translate-x-0'
             }`}
           >
@@ -93,7 +93,7 @@ function Nav() {
               onMouseEnter={() => setIsDropdownOpen(true)}
               onMouseLeave={() => setIsDropdownOpen(false)}
             >
-              <button className="text-lg font-medium focus:outline-none">
+              <button className="text-lg font-medium focus:outline-none pl-2">
                 About
               </button>
               <div
