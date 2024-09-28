@@ -1,17 +1,20 @@
 import { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom"; // Import useLocation
+import Card from "./Card";
 
 function Nav() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isAboutExpanded, setIsAboutExpanded] = useState(false);
-  const [isHomeExpanded, setIsHomeExpanded] = useState(false); // For Home dropdown
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // For mobile menu
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth); // Track window width
+  const [isHomeExpanded, setIsHomeExpanded] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   const aboutButtonRef = useRef<HTMLDivElement | null>(null);
   const aboutDropdownRef = useRef<HTMLDivElement | null>(null);
   const homeButtonRef = useRef<HTMLDivElement | null>(null);
   const homeDropdownRef = useRef<HTMLDivElement | null>(null);
+
+  const location = useLocation(); // Get the current location
 
   const handleScroll = () => {
     setIsScrolled(window.scrollY > 10);
@@ -43,7 +46,7 @@ function Nav() {
         !homeDropdownRef.current.contains(event.target as Node)
       ) {
         setIsAboutExpanded(false);
-        setIsHomeExpanded(false); // Close Home dropdown
+        setIsHomeExpanded(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -86,14 +89,12 @@ function Nav() {
     }, 100);
   };
 
-  // Toggle mobile menu
   const handleMobileMenuToggle = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  // Render Mobile Navbar
   const renderMobileNavbar = () => (
-    <div className={`fixed top-0 left-0 w-full z-50 bg-black text-white`}>
+    <div className={`fixed top-0 left-0 w-full z-50 bg-transparent text-white`}>
       <div className="flex items-center justify-between p-4">
         <Link to="/" className="text-xl font-bold">
           ViewMyWay
@@ -108,16 +109,23 @@ function Nav() {
       <div
         className={`transition-all duration-500 ease-in-out transform ${
           isMobileMenuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
-        } overflow-hidden bg-black bg-opacity-90 text-white w-full`}
+        } overflow-hidden bg-black text-white w-full`}
         style={{ transitionProperty: "max-height, opacity" }}
       >
-        <div className="flex flex-col items-center justify-center space-y-6 h-full p-6">
+        <div className={`flex flex-col items-center justify-center space-y-6 h-screen p-6`}>
           <Link to="/" className="hover:text-gray-300 text-lg">
-            Home
+            Posts
           </Link>
-          <Link to="/signin" className="hover:text-gray-300 text-lg">
-            Sign In
-          </Link>
+          {location.pathname !== "/signup" && (
+            <Link to="/signup" className="hover:text-gray-300 text-lg">
+              Sign Up
+            </Link>
+          )}
+          {location.pathname !== "/signin" && (
+            <Link to="/signin" className="hover:text-gray-300 text-lg">
+              Sign In
+            </Link>
+          )}
           <Link to="/about" className="hover:text-gray-300 text-lg">
             About
           </Link>
@@ -126,7 +134,6 @@ function Nav() {
     </div>
   );
 
-  // // Render Desktop Navbar
   const renderDesktopNavbar = () => (
     <div className="relative">
       <div
@@ -135,27 +142,17 @@ function Nav() {
             ? "bg-black bg-opacity-80 text-white shadow-lg"
             : "bg-black bg-opacity-60 text-white shadow-md"
         }`}
-        style={{ width: "73%", height: isAboutExpanded || isHomeExpanded ? "auto" : "40px", transition: "height 0.3s ease" }} // Dynamic height based on dropdown state
-
-
+        style={{ width: "73%", height: isAboutExpanded || isHomeExpanded ? "auto" : "40px", transition: "height 0.3s ease" }}
       >
-        <div
-          className="flex items-center justify-between"
-          style={{ padding: "0 10px" }}
-        >
-          {" "}
-          {/* Further reduced padding */}
+        <div className="flex items-center justify-between" style={{ padding: "0 10px" }}>
           <Link
             to="/"
             className="text-lg font-extrabold text-white hover:text-gray-300 transition-colors duration-300"
-            style={{ padding: "4px 0" }} // Reduced padding for title
+            style={{ padding: "4px 0" }}
           >
             ViewMyWay
           </Link>
           <div className="flex items-center space-x-4">
-            {" "}
-            {/* Reduced spacing between elements */}
-            {/* Home Dropdown */}
             <div
               className="relative"
               ref={homeButtonRef}
@@ -163,22 +160,34 @@ function Nav() {
               onMouseLeave={handleMouseLeaveHome}
             >
               <button
-                className="text-md font-semibold text-gray-200 hover:text-white transition-colors duration-300 focus:outline-none"
+                className="text-md font-semibold text-white hover:bg-transparent hover:text-gray-300 transition-colors duration-300"
                 onClick={() => setIsHomeExpanded(!isHomeExpanded)}
-                style={{ padding: "2px 0" }} // Further reduced padding for buttons
+                style={{ padding: "2px 0" }}
               >
-                Home
+                Posts
               </button>
             </div>
-            {/* Sign In Link */}
-            <Link
-              to="/signin"
-              className="text-md font-semibold text-white hover:text-gray-300 transition-colors duration-300"
-              style={{ padding: "2px 0" }} // Further reduced padding
-            >
-              Sign In
-            </Link>
-            {/* About Dropdown */}
+
+            {/* Conditional Rendering for Sign In/Sign Up */}
+            {location.pathname !== "/signup" && (
+              <Link
+                to="/signup"
+                className="text-md font-semibold text-white hover:text-gray-300 transition-colors duration-300"
+                style={{ padding: "2px 0" }}
+              >
+                Sign Up
+              </Link>
+            )}
+            {location.pathname !== "/signin" && (
+              <Link
+                to="/signin"
+                className="text-md font-semibold text-white hover:text-gray-300 transition-colors duration-300"
+                style={{ padding: "2px 0" }}
+              >
+                Sign In
+              </Link>
+            )}
+
             <div
               className="relative"
               ref={aboutButtonRef}
@@ -186,9 +195,9 @@ function Nav() {
               onMouseLeave={handleMouseLeaveAbout}
             >
               <button
-                className="text-md font-semibold text-gray-200 hover:text-white transition-colors duration-300 focus:outline-none"
+                className="text-md font-semibold text-white hover:bg-transparent hover:text-gray-300 transition-colors duration-300"
                 onClick={() => setIsAboutExpanded(!isAboutExpanded)}
-                style={{ padding: "2px 0" }} // Further reduced padding for About button
+                style={{ padding: "2px 0" }}
               >
                 About
               </button>
@@ -197,163 +206,55 @@ function Nav() {
         </div>
 
         {/* About Dropdown */}
-
         <div
-          className={`transition-all duration-500 ease-out overflow-hidden bg-black bg-opacity-90 text-white rounded-lg shadow-lg mt-2 ${
-            isAboutExpanded
-              ? "max-h-[500px] opacity-100 translate-y-0"
-              : "max-h-0 opacity-0 translate-y-4"
+          className={`transition-all duration-700 ease-out overflow-hidden bg-black bg-opacity-90 text-black rounded-lg shadow-lg mt-2 ${
+            isAboutExpanded ? "max-h-[500px] opacity-100 translate-y-0" : "max-h-0 opacity-0 translate-y-4"
           }`}
           ref={aboutDropdownRef}
           onMouseEnter={handleMouseEnterAbout}
           onMouseLeave={handleMouseLeaveAbout}
         >
           <div className="grid grid-cols-3 gap-4 p-6">
-            <div className="bg-gray-800 rounded-lg shadow-md p-4 hover:bg-gray-700">
-              <h3 className="text-lg font-semibold text-white">
-                Full-width Card
-              </h3>
-
-              <p className="text-sm text-gray-400">
-                Description of Full-width Card
-              </p>
-
-              <Link
-                to="/full-width-card"
-                className="mt-3 inline-block px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
-              >
-                Visit
-              </Link>
-            </div>
-
-            <div className="col-span-2 row-span-2 bg-gray-800 rounded-lg shadow-md p-4 hover:bg-gray-700">
-              <h3 className="text-lg font-semibold text-white">
-                Vertical Card 1
-              </h3>
-
-              <p className="text-sm text-gray-400">
-                Description of Vertical Card 1
-              </p>
-
-              <Link
-                to="/vertical-card-1"
-                className="mt-3 inline-block px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
-              >
-                Visit
-              </Link>
-            </div>
-
-            <div className="col-span-2 row-span-2 bg-gray-800 rounded-lg shadow-md p-4 hover:bg-gray-700">
-              <h3 className="text-lg font-semibold text-white">
-                Vertical Card 2
-              </h3>
-
-              <p className="text-sm text-gray-400">
-                Description of Vertical Card 2
-              </p>
-
-              <Link
-                to="/vertical-card-2"
-                className="mt-3 inline-block px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
-              >
-                Visit
-              </Link>
-            </div>
-
-            <div className="bg-gray-800 rounded-lg shadow-md p-4 hover:bg-gray-700">
-              <h3 className="text-lg font-semibold text-white">Card 1</h3>
-
-              <p className="text-sm text-gray-400">Description of Card 1</p>
-            </div>
-
-            <div className="bg-gray-800 rounded-lg shadow-md p-4 hover:bg-gray-700">
-              <h3 className="text-lg font-semibold text-white">Card 2</h3>
-
-              <p className="text-sm text-gray-400">Description of Card 2</p>
-            </div>
-
-            <div className="bg-gray-800 rounded-lg shadow-md p-4 hover:bg-gray-700">
-              <h3 className="text-lg font-semibold text-white">Card 3</h3>
-
-              <p className="text-sm text-gray-400">Description of Card 3</p>
-            </div>
+            <Card title="Full-width Card" description="Description of Full-width Card" link="/full-width-card" />
+            <Card title="Vertical Card 1" description="Description of Vertical Card 1" link="/vertical-card-1" rowSpan={2} colSpan={2} />
+            <Card title="Vertical Card 2" description="Description of Vertical Card 2" link="/vertical-card-2" />
+            <Card title="Card 1" description="Description of Card 1" link="/card-1" />
+            <Card title="Card 2" description="Description of Card 2" link="/card-2" />
+            <Card title="Card 3" description="Description of Card 3" link="/card-3" />
           </div>
         </div>
 
-        {/* Home Dropdown */}
-
+        {/* Posts Dropdown */}
         <div
-          className={`transition-all duration-500 ease-out overflow-hidden bg-black bg-opacity-90 text-white rounded-lg shadow-lg mt-2 ${
-            isHomeExpanded
-              ? "max-h-[500px] opacity-100 translate-y-0"
-              : "max-h-0 opacity-0 translate-y-4"
+          className={`transition-all duration-700 ease-out overflow-hidden bg-black bg-opacity-90 text-white rounded-lg shadow-lg mt-2 ${
+            isHomeExpanded ? "max-h-[500px] opacity-100 translate-y-0" : "max-h-0 opacity-0 translate-y-4"
           }`}
           ref={homeDropdownRef}
           onMouseEnter={handleMouseEnterHome}
           onMouseLeave={handleMouseLeaveHome}
         >
           <div className="grid grid-cols-3 gap-4 p-6">
-            {/* Example Content for Home Dropdown */}
-
-            <div className="bg-gray-800 rounded-lg shadow-md p-4 hover:bg-gray-700">
-              <h3 className="text-lg font-semibold text-white">
-                Home Section 1
-              </h3>
-
-              <p className="text-sm text-gray-400">
-                Description of Home Section 1
-              </p>
-
-              <Link
-                to="/home-section-1"
-                className="mt-3 inline-block px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
-              >
-                Visit
-              </Link>
-            </div>
-
-            <div className="bg-gray-800 rounded-lg shadow-md p-4 hover:bg-gray-700">
-              <h3 className="text-lg font-semibold text-white">
-                Home Section 2
-              </h3>
-
-              <p className="text-sm text-gray-400">
-                Description of Home Section 2
-              </p>
-
-              <Link
-                to="/home-section-2"
-                className="mt-3 inline-block px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
-              >
-                Visit
-              </Link>
-            </div>
-
-            <div className="bg-gray-800 rounded-lg shadow-md p-4 hover:bg-gray-700">
-              <h3 className="text-lg font-semibold text-white">
-                Home Section 3
-              </h3>
-
-              <p className="text-sm text-gray-400">
-                Description of Home Section 3
-              </p>
-
-              <Link
-                to="/home-section-3"
-                className="mt-3 inline-block px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
-              >
-                Visit
-              </Link>
-            </div>
+            {["Post catogery 1", "Post catogery 2", "Post catogery 3"].map((title, index) => (
+              <div key={index} className="relative rounded-lg shadow-md overflow-hidden">
+                <div className="relative z-10 p-4 bg-gray-100 bg-opacity-80 rounded-lg">
+                  <h3 className="text-lg font-semibold text-black">{title}</h3>
+                  <p className="text-sm text-gray-700">Description of {title}</p>
+                  <Link
+                    to={`/${title.replace(/\s+/g, '-').toLowerCase()}`}
+                    className="mt-3 inline-block px-4 py-2 bg-black text-white rounded-lg hover:bg-white hover:text-black transition duration-300"
+                  >
+                    Visit
+                  </Link>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
     </div>
   );
 
-  return (
-    <>{windowWidth < 1026 ? renderMobileNavbar() : renderDesktopNavbar()}</>
-  );
+  return <>{windowWidth < 1026 ? renderMobileNavbar() : renderDesktopNavbar()}</>;
 }
 
 export default Nav;

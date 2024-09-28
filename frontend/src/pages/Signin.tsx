@@ -1,50 +1,59 @@
+import Footer from "../components/Footer";
 import Nav from "../components/Nav";
 import { Quote } from "../components/Quote";
+import Button from "../components/Button";
+import Input from "../components/Input";
+import { Link } from "react-router-dom";
+import {useState} from "react"
+
+
 
 function Signin() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen bg-black text-white">
-      <Nav/>
-      {/* Quote Section */}
-      <div className="flex lg:w-1/2 h-1/3 lg:h-auto items-center justify-center p-8 lg:p-16">
-        <Quote 
-          message="Time is yours, and victory is within your grasp. Never stop running toward your dreams." 
-          fontSize={24} // Slightly larger for readability
-        />
-      </div>
+    <>
+      <div className="flex flex-col lg:flex-row min-h-screen bg-black text-white">
+        <Nav />
 
-      {/* Login Form Section */}
-      <div className="flex lg:w-1/2 h-2/3 lg:h-auto items-center justify-center p-8 lg:p-16">
-        <form className="w-full max-w-sm bg-black text-white">
-          <h2 className="text-3xl font-bold mb-6">Sign In</h2>
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-white text-sm font-bold mb-2">Email</label>
-            <input 
-              type="email" 
-              id="email" 
-              className="shadow appearance-none border rounded w-full py-2 px-3 bg-black text-white leading-tight focus:outline-none focus:shadow-outline" 
-              placeholder="Email" 
+        {/* Main Content Section */}
+        <div className="flex flex-col lg:flex-row flex-grow items-center justify-center p-8 lg:p-16">
+          
+          {/* Quote Section */}
+          <div className="flex lg:w-1/2 items-center justify-center mb-8 lg:mb-0">
+            <Quote 
+              initialMessage="Time is yours, and victory is within your grasp. Never stop running toward your dreams." 
+              initialAuthor="Jai Krishna Sir"
+              fontSize={24} 
             />
           </div>
-          <div className="mb-6">
-            <label htmlFor="password" className="block text-white text-sm font-bold mb-2">Password</label>
-            <input 
-              type="password" 
-              id="password" 
-              className="shadow appearance-none border rounded w-full py-2 px-3 bg-black text-white leading-tight focus:outline-none focus:shadow-outline" 
-              placeholder="Password" 
-            />
+
+          {/* Login Form Section */}
+          <div className="flex lg:w-1/2 items-center justify-center"> 
+            <form className="w-full max-w-sm bg-black text-white">
+              <h2 className="text-3xl font-bold mb-6">Sign In</h2>
+              <h3 className="text-lg font-bold mb-6">Don't have an account ?<Link className="ml-2 text-white underline hover:text-blue-200" to={"/signup"}>Sign up</Link></h3>
+              <Input
+                type="email"
+                id="email"
+                label="Email"
+                onChange={(e) => setEmail(e.target.value)} 
+                value={email}/>
+              <Input
+                type="password"
+                id="password"
+                label="Password"
+                onChange={(e) => setPassword(e.target.value)} 
+                value={password}/>
+              <Button type="button" className="w-full">
+                Sign In
+              </Button>
+            </form>
           </div>
-          <button 
-            type="submit" 
-            className="bg-white text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline hover:bg-gray-200 transition duration-300 w-full"
-          >
-            Sign In
-          </button>
-        </form>
+        </div>
       </div>
-     
-    </div>
+      <Footer />
+    </>
   );
 }
 

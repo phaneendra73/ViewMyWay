@@ -1,0 +1,149 @@
+import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
+
+function Nav() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isAboutExpanded, setIsAboutExpanded] = useState(false);
+
+  const aboutButtonRef = useRef<HTMLDivElement | null>(null);
+  const aboutDropdownRef = useRef<HTMLDivElement | null>(null);
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+    document.body.style.overflow = isOpen ? 'auto' : 'hidden';
+  };
+
+  const handleScroll = () => {
+    setIsScrolled(window.scrollY > 10);
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        aboutButtonRef.current &&
+        !aboutButtonRef.current.contains(event.target as Node) &&
+        aboutDropdownRef.current &&
+        !aboutDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsAboutExpanded(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  return (
+    <>
+      <div className="relative">
+        {/* Nav Container */}
+        <div className={`fixed top-5 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 ease-in-out rounded-lg border border-white p-3 ${
+            isScrolled ? 'bg-black bg-opacity-80 text-white shadow-lg' : 'bg-black bg-opacity-60 text-white shadow-md'
+          }`}
+          style={{ width: '85%', marginTop: '15px' }} // Set the width of the nav bar
+        >
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <Link
+              to="/"
+              className="text-2xl font-extrabold text-white hover:text-gray-300 transition-colors duration-300"
+            >
+              ViewMyWay
+            </Link>
+
+            {/* Navigation Links */}
+            <div className="flex items-center space-x-8"> {/* Adjust spacing here */}
+              <Link
+                to="/"
+                className="text-lg font-semibold text-gray-200 hover:text-white transition-colors duration-300 p-2 rounded-lg border border-transparent hover:border-white"
+              >
+                Home
+              </Link>
+              <Link
+                to="/signin"
+                className="text-lg font-semibold text-gray-200 hover:text-white transition-colors duration-300 p-2 rounded-lg border border-transparent hover:border-white"
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/signup"
+                className="text-lg font-semibold text-gray-200 hover:text-white transition-colors duration-300 p-2 rounded-lg border border-transparent hover:border-white"
+              >
+                Sign Up
+              </Link>
+
+              {/* About Button */}
+              <div
+                className="relative"
+                ref={aboutButtonRef}
+                onMouseEnter={() => setIsAboutExpanded(true)}
+                onMouseLeave={() => {
+                  if (!aboutDropdownRef.current) {
+                    setIsAboutExpanded(false);
+                  }
+                }}
+              >
+                <button
+                  className="text-lg font-semibold text-gray-200 hover:text-white transition-colors duration-300 focus:outline-none relative p-2"
+                  onClick={() => setIsAboutExpanded(!isAboutExpanded)}
+                >
+                  About
+                  {/* Border transition */}
+                  <div className={`absolute inset-0 border-2 rounded-lg transition-all duration-300 ${isAboutExpanded ? 'border-white' : 'border-transparent'}`} />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* About Dropdown Row */}
+          <div
+            className={`transition-all duration-500 ease-out overflow-hidden bg-black bg-opacity-90 text-white rounded-lg shadow-lg mt-2 ${
+              isAboutExpanded ? 'max-h-[500px] opacity-100 translate-y-0' : 'max-h-0 opacity-0 translate-y-4'
+            }`}
+            ref={aboutDropdownRef}
+          >
+            <div className="grid grid-cols-3 gap-4 p-4">
+              <Link
+                to="/about"
+                className="block text-lg font-medium text-gray-300 hover:text-white transition-colors duration-300 p-2 rounded-lg"
+              >
+                About Us
+              </Link>
+              <Link
+                to="/contact"
+                className="block text-lg font-medium text-gray-300 hover:text-white transition-colors duration-300 p-2 rounded-lg"
+              >
+                Contact
+              </Link>
+              <Link
+                to="/founder"
+                className="block text-lg font-medium text-gray-300 hover:text-white transition-colors duration-300 p-2 rounded-lg"
+              >
+                Founder
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Overlay and Blur Effect when menu is open */}
+        {isOpen && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40 transition-all duration-300 ease-in-out"
+            onClick={toggleMenu}
+          />
+        )}
+      </div>
+    </>
+  );
+}
+
+export default Nav;

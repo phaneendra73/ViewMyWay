@@ -1,7 +1,7 @@
-/* index.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 @keyframes reveal {
   from {
     opacity: 0;
@@ -14,10 +14,11 @@
 .reveal {
   animation: reveal 1s ease-out;
 }
+
 @media (max-width: 768px) {
   /* Adjust font size for smaller screens */
   .quote-text {
-    display: none;  /* Adjust as needed */
+    display: none; /* Adjust as needed */
   }
 
   /* Optionally disable animation on mobile */
@@ -26,3 +27,74 @@
   }
 }
 
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+button {
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #ccc;
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.5;
+  }
+}
+
+@keyframes moveRandom {
+  0% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--move-x), var(--move-y));
+    opacity: 0;
+  }
+}
+
+.star {
+  background: radial-gradient(circle, white 0%, transparent 60%);
+  clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+  position: absolute;
+  will-change: transform, opacity; /* Optimize for performance */
+}
