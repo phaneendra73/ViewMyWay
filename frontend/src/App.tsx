@@ -3,6 +3,7 @@ import Signup from './pages/Signup'
 import Signin from './pages/Signin'
 import Post from './pages/Post'
 import Home from './pages/Home'
+import PostPage from './components/Postpage'
 
 function App() {
 
@@ -14,7 +15,7 @@ function App() {
    <Route path="/" element={<Home />} />
     <Route path='/signup' element={<Signup/>}/>
     <Route path='/signin' element={<Signin/>}/>
-    <Route path='/post/:id' element={<Post/>}/>
+    <Route path='/post/:id' element={<PostPage/>}/>
     <Route path='/post' element={<Post/>}/>
    </Routes>
    </BrowserRouter>

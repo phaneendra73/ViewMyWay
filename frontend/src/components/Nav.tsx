@@ -214,9 +214,9 @@ function Nav() {
           onMouseEnter={handleMouseEnterAbout}
           onMouseLeave={handleMouseLeaveAbout}
         >
-          <div className="grid grid-cols-3 gap-4 p-6">
-            <Card title="Full-width Card" description="Description of Full-width Card" link="/full-width-card" />
-            <Card title="Vertical Card 1" description="Description of Vertical Card 1" link="/vertical-card-1" rowSpan={2} colSpan={2} />
+          <div className="grid grid-cols-4  grid-rows-1 gap-4 p-6">
+          
+            <Card title="Vertical Card 1" description="Description of Vertical Card 1" link="/vertical-card-1" className="col-span-2 row-span-4"/>
             <Card title="Vertical Card 2" description="Description of Vertical Card 2" link="/vertical-card-2" />
             <Card title="Card 1" description="Description of Card 1" link="/card-1" />
             <Card title="Card 2" description="Description of Card 2" link="/card-2" />
@@ -234,7 +234,7 @@ function Nav() {
           onMouseLeave={handleMouseLeaveHome}
         >
           <div className="grid grid-cols-3 gap-4 p-6">
-            {["Post catogery 1", "Post catogery 2", "Post catogery 3"].map((title, index) => (
+            {["Post", "Post catogery 2", "Post catogery 3"].map((title, index) => (
               <div key={index} className="relative rounded-lg shadow-md overflow-hidden">
                 <div className="relative z-10 p-4 bg-gray-100 bg-opacity-80 rounded-lg">
                   <h3 className="text-lg font-semibold text-black">{title}</h3>

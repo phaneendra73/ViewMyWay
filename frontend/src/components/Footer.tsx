@@ -8,7 +8,7 @@ function Footer() {
       <div className="container mx-auto px-4 flex flex-col items-center">
         
         {/* Line above Social Media Links */}
-        <div className="border-t border-gray-800 w-full mb-4" />
+        <div className="border-t border-stone-900 w-full mb-4" />
 
         {/* Social Media Links */}
         <div className="flex justify-center items-center space-x-6 mb-4">
