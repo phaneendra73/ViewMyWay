@@ -13,7 +13,7 @@ const Card: React.FC<CardProps> = ({
   title,
   description,
   link,
-  bgColor = "bg-gray-100", // Default background color
+ // bgColor = "bg-gray-100", // Default background color
   className=""
 }) => {
   return (

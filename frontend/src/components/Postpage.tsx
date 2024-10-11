@@ -1,42 +1,41 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import Quill from "quill";
+import "quill/dist/quill.snow.css";
 import Footer from "../components/Footer";
 import Nav from "../components/Nav";
-import Texteditor from "../components/Texteditor";
-
-const posts = [
-  {
-    id: "1",
-    title: "React Conf 2024 Recap",
-    date: "May 22, 2024",
-    content: `
-      Last week we hosted React Conf 2024, a two-day conference in Henderson, Nevada. 
-      The event was packed with insightful talks, hands-on workshops, and networking opportunities. 
-      Here are some of the highlights:
-      
-      **Day 1 Highlights:**
-      - Keynote by Dan Abramov on the future of React.
-      - Workshop on React Server Components.
-      - Panel discussion on state management with Redux and Recoil.
-      
-      **Day 2 Highlights:**
-      - Talk on performance optimization in React applications.
-      - Deep dive into React Native for mobile development.
-      - Closing keynote by Sophie Alpert on the evolution of React.
-
-      We look forward to seeing you at next year's conference!
-    `,
-    author: "John Doe",
-  },
-  // Add more posts as needed...
-];
 
 const PostPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const post = posts.find((post) => post.id === id);
+  const [post, setPost] = useState<{ title: string; date: string; content: string; author: string } | null>(null);
+
+  useEffect(() => {
+    const fetchPost = () => {
+      const simulatedPost = {
+        title: "Sample Post Title",
+        date: "October 10, 2024",
+        content: ` <p>haufdhs<span style="color: rgb(255, 255, 0);"> udsifuidsyf dsufdyuf gdgy n</span>iur ttyru tyreytrieytuyr ertyrt<span style="color: rgb(255, 255, 255);"> iueritiuerty yreuityuertyerut </span><span style="color: rgb(102, 185, 102);">ieruityr reyutyeruityirt uryetiu eryuyru ytrutyrueyteriuyi</span></p><p><br></p>`,
+        author: "Jane Doe",
+      };
+      setPost(simulatedPost);
+    };
+
+    fetchPost();
+  }, [id]);
+
+  useEffect(() => {
+    if (post) {
+      const quill = new Quill("#quill-viewer", {
+        theme: "snow",
+        readOnly: true,
+        modules: { toolbar: false }
+      });
+      quill.clipboard.dangerouslyPasteHTML(post.content);
+    }
+  }, [post]);
 
   if (!post) {
-    return <div>Post not found</div>;
+    return <div>Loading...</div>;
   }
 
   return (
@@ -47,7 +46,7 @@ const PostPage: React.FC = () => {
           <div className="border border-white p-6 rounded-lg shadow-lg mb-8 relative">
             <div className="flex justify-between items-start">
               <div>
-                <h1 className="text-4xl font-bold mb-2">{post.title}</h1>
+                <h1 className="text-2xl font-bold mb-2">{post.title}</h1>
                 <p className="text-sm text-gray-400 mb-4">{post.date} by {post.author}</p>
               </div>
               <button
@@ -61,11 +60,9 @@ const PostPage: React.FC = () => {
               </button>
             </div>
             <hr className="border-t border-white my-4" />
-            <div className="prose prose-invert max-w-none">
-              <p>{post.content}</p>
-            </div>
+            {/* Quill Viewer */}
+            <div id="quill-viewer" className="ql-container ql-snow" style={{ minHeight: "200px" }}></div>
           </div>
-          <Texteditor />
         </div>
       </div>
       <Footer />

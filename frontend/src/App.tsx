@@ -4,6 +4,7 @@ import Signin from './pages/Signin'
 import Post from './pages/Post'
 import Home from './pages/Home'
 import PostPage from './components/Postpage'
+import EditorPage from './pages/Editor'
 
 function App() {
 
@@ -17,6 +18,7 @@ function App() {
     <Route path='/signin' element={<Signin/>}/>
     <Route path='/post/:id' element={<PostPage/>}/>
     <Route path='/post' element={<Post/>}/>
+    <Route path='/Edit' element={<EditorPage/>}/>
    </Routes>
    </BrowserRouter>
     </>
