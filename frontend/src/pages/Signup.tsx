@@ -1,23 +1,28 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import Nav from "../components/Nav";
 import { Quote } from "../components/Quote";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import { Link } from "react-router-dom";
-import { signupSchema } from "@phaneendra73/blog-common"; // Assuming this is a Zod schema
+import { SignupInput, signupSchema } from "@phaneendra73/blog-common"; // Assuming this is a Zod schema
 import axios from "axios";
+import { BACKEND_URL } from "../config";
 
 const SignUp: React.FC = () => {
-  const [email, setEmail] = useState<string>("");
-  const [username, setUsername] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const navigate = useNavigate(); // Add useNavigate for redirection
+  const [postsignup, setPostSignup] = useState<SignupInput>({
+    email: '',
+    password: '',
+    name: ''
+  });
   const [confPassword, setConfPassword] = useState<string>("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [success, setSuccess] = useState<string>("");
 
   const validateInput = async (): Promise<boolean> => {
-    const parsedBody = signupSchema.safeParse({ username, email, password, confPassword });
+    const parsedBody = signupSchema.safeParse(postsignup);
     if (!parsedBody.success) {
       const newErrors: { [key: string]: string } = {};
       parsedBody.error.errors.forEach(err => {
@@ -26,7 +31,7 @@ const SignUp: React.FC = () => {
       setErrors(newErrors);
       return false;
     }
-    setErrors({}); // Clear any previous errors
+    setErrors({});
     return true;
   };
 
@@ -34,22 +39,34 @@ const SignUp: React.FC = () => {
     const isValid = await validateInput();
     if (!isValid) return;
 
-    if (password !== confPassword) {
+    if (postsignup.password !== confPassword) {
       setErrors((prev) => ({ ...prev, confPassword: "Passwords do not match" }));
       return;
     }
 
     try {
-      const response = await axios.post("http://127.0.0.1:8787/api/v1/user/signup", {
-        username,
-        email,
-        password,
-      });
-      setSuccess(response.data.message);
+      const response = await axios.post(`${BACKEND_URL}/api/v1/user/signup`, postsignup);
+      // Store JWT in local storage
+      localStorage.setItem("ViewMyWay", response.data.jwt);
+     
+
+      setSuccess("Signup successful! Redirecting...");
       setErrors({}); // Clear any previous errors
+
+      // Navigate to the desired page (e.g., dashboard)
+      setTimeout(() => {
+        navigate("/dashboard"); // Change this to your desired route
+      }, 2000); // Optional: add a delay before navigating
     } catch (err: any) {
-      setErrors({ api: err.response?.data?.message || "An error occurred. Please try again." });
-      setSuccess(""); // Clear any previous success messages
+      if (err.response && err.response.data) {
+        const { error } = err.response.data;
+        console.log(error);
+        setErrors({api:error}); // Set the new errors
+        setSuccess(""); // Clear any previous success messages
+      } else {
+        setErrors({ api: "An error occurred. Please try again." });
+        setSuccess(""); // Clear any previous success messages
+      }
     }
   };
 
@@ -79,8 +96,8 @@ const SignUp: React.FC = () => {
                 type="text"
                 id="username"
                 label="Username"
-                onChange={(e) => setUsername(e.target.value)} 
-                value={username}
+                onChange={(e) => setPostSignup({ ...postsignup, name: e.target.value })}
+                value={postsignup.name}
                 errorMessage={errors.username} // Pass the error message
               />
               
@@ -88,8 +105,8 @@ const SignUp: React.FC = () => {
                 type="email"
                 id="email"
                 label="Email"
-                onChange={(e) => setEmail(e.target.value)} 
-                value={email}
+                onChange={(e) => setPostSignup({ ...postsignup, email: e.target.value })}
+                value={postsignup.email}
                 errorMessage={errors.email} // Pass the error message
               />
               
@@ -97,8 +114,8 @@ const SignUp: React.FC = () => {
                 type="password"
                 id="password"
                 label="Password"
-                onChange={(e) => setPassword(e.target.value)} 
-                value={password}
+                onChange={(e) => setPostSignup({ ...postsignup, password: e.target.value })}
+                value={postsignup.password}
                 errorMessage={errors.password} // Pass the error message
               />
               
@@ -111,7 +128,7 @@ const SignUp: React.FC = () => {
                 errorMessage={errors.confPassword} // Pass the error message
               />
 
-              {errors.api && <p className="text-red-500 text-sm mt-1 mb-4 justify-center">{errors.api}</p>}
+              {errors.api && <p className="text-red-500 text-sm mt-1 mb-4">{errors.api}</p>}
 
               <Button type="button" className="w-full" onClick={hitSignup}>
                 Sign Up

@@ -1,6 +1,35 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom"; // Import useLocation
 import Card from "./Card";
+import axios from "axios";
+
+const handleClick = async () => {
+  // Get the auth token from local storage
+  const token = localStorage.getItem("ViewMyWay"); // Change 'authToken' to your actual token key
+
+  if (token) {
+    try {
+      const response = await axios.get("http://127.0.0.1:8787/api/v1/post", {
+        headers: {
+          Authorization: `Bearer ${token}`, // Set the Authorization header
+        },
+      });
+
+      console.log(response); // Handle the response as needed
+
+      // Optionally navigate to another page if necessary
+      // navigate(`/some-other-page`);
+
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      // Handle error as needed (e.g., show a message)
+    }
+  } else {
+    console.error("No token found");
+    // Handle case where token is not available (e.g., redirect to login)
+  }
+};
+
 
 function Nav() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -240,11 +269,15 @@ function Nav() {
                   <h3 className="text-lg font-semibold text-black">{title}</h3>
                   <p className="text-sm text-gray-700">Description of {title}</p>
                   <Link
-                    to={`/${title.replace(/\s+/g, '-').toLowerCase()}`}
-                    className="mt-3 inline-block px-4 py-2 bg-black text-white rounded-lg hover:bg-white hover:text-black transition duration-300"
-                  >
-                    Visit
-                  </Link>
+      to={`/${title.replace(/\s+/g, '-').toLowerCase()}`}
+      onClick={(e) => {
+        e.preventDefault(); // Prevent default link behavior
+        handleClick(); // Call the function to handle API call
+      }}
+      className="mt-3 inline-block px-4 py-2 bg-black text-white rounded-lg hover:bg-white hover:text-black transition duration-300"
+    >
+      Visit
+    </Link>
                 </div>
               </div>
             ))}
