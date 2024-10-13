@@ -38,7 +38,7 @@ const SignIn: React.FC = () => {
     if (!isValid) return;
 
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/v1/user/signin`, postsignin);
+      const response = await axios.post(`${BACKEND_URL}/user/signin`, postsignin);
 
       // Store JWT in local storage
       localStorage.setItem("ViewMyWay", response.data.jwt);

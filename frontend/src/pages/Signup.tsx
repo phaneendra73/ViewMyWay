@@ -38,14 +38,17 @@ const SignUp: React.FC = () => {
   const hitSignup = async (): Promise<void> => {
     const isValid = await validateInput();
     if (!isValid) return;
-
+if(postsignup.name){
+  setErrors((prev) => ({ ...prev, username: "User name is required" }));
+  return;
+}
     if (postsignup.password !== confPassword) {
       setErrors((prev) => ({ ...prev, confPassword: "Passwords do not match" }));
       return;
     }
 
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/v1/user/signup`, postsignup);
+      const response = await axios.post(`${BACKEND_URL}/user/signup`, postsignup);
       // Store JWT in local storage
       localStorage.setItem("ViewMyWay", response.data.jwt);
      

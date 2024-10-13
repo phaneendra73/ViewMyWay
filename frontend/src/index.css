@@ -98,3 +98,94 @@ button:hover {
   position: absolute;
   will-change: transform, opacity; /* Optimize for performance */
 }
+////////////////////////////////
+@keyframes rotateIn {
+  from {
+    transform: rotateY(90deg); /* Start rotated out */
+    opacity: 0; /* Start invisible */
+  }
+  to {
+    transform: rotateY(0); /* End at normal rotation */
+    opacity: 1; /* End fully visible */
+  }
+}
+
+@keyframes rotateOut {
+  from {
+    transform: rotateY(0); /* Start at normal rotation */
+    opacity: 1; /* Start fully visible */
+  }
+  to {
+    transform: rotateY(-90deg); /* Rotate out to the left */
+    opacity: 0; /* Fade out */
+  }
+}
+
+/* Styles for entering page */
+.page-enter {
+  transform: rotateY(90deg); /* Start rotated in */
+  opacity: 0; /* Start invisible */
+}
+
+.page-enter-active {
+  animation: rotateIn 800ms ease forwards; /* Entering animation */
+}
+
+/* Styles for exiting page */
+.page-exit {
+  transform: rotateY(0); /* Start at normal rotation */
+  opacity: 1; /* Fully visible */
+}
+
+.page-exit-active {
+  animation: rotateOut 800ms ease forwards; /* Exiting animation */
+}
+
+.page-container {
+  position: relative;
+  overflow: hidden; /* Ensure content doesn't overflow during transition */
+}
+/////////////////////////////////////////////////
+.cube-container {
+  position: sticky; /* Make it sticky */
+  bottom: 30px; /* Position it above the bottom of the viewport */
+  right: 20px; /* Position from the right */
+  width: 100px; /* Fixed width for the cube container */
+  height: 100px; /* Fixed height for the cube container */
+  z-index: 10; /* Ensure it appears above other content */
+}
+
+.cube {
+  position: relative;
+  width: 100%; /* Full width of container */
+  height: 100%; /* Full height of container */
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease; /* Smooth transition */
+}
+
+.cube-face {
+  position: absolute;
+  width: 100px; /* Cube width */
+  height: 100px; /* Cube height */
+  background: rgba(0, 0, 0, 0.8); /* Dark background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px; /* Font size for numbers */
+  backdrop-filter: blur(5px); /* Glassy effect */
+  border-radius: 8px; /* Rounded corners */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle border for depth */
+}
+
+/* Face transformations */
+.front  { transform: rotateY(  0deg) translateZ(50px); }
+.back   { transform: rotateY(180deg) translateZ(50px); }
+.right  { transform: rotateY( 90deg) translateZ(50px); }
+.left   { transform: rotateY(-90deg) translateZ(50px); }
+.top    { transform: rotateX( 90deg) translateZ(50px); }
+.bottom { transform: rotateX(-90deg) translateZ(50px); }
+
+/* Adding gradient effect for each face */
+.cube-face {
+  background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.8)); /* Gradient effect */
+}

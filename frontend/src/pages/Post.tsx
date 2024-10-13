@@ -1,133 +1,81 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import Quill from "quill";
+import "quill/dist/quill.snow.css";
 import Footer from "../components/Footer";
 import Nav from "../components/Nav";
-import PostCard from "../components/Postcard"; // Import your PostCard component
+import { usePost } from "../hooks";
+import { motion } from "framer-motion"; // Import motion from Framer Motion
+import Skeleton from "../Skeletons/Post"; // Import the Skeleton component
+import "../index.css";
 
-const posts = [
-  {
-    title: "React Conf 2024 Recap",
-    date: "May 22, 2024",
-    excerpt: "Last week we hosted React Conf 2024, a two-day conference in Henderson, Nevada...",
-    author: "John Doe", // Add author for each post
-    link: "/post/1",
-  },
-  {
-    title: "React Conf 2024 Recap",
-    date: "May 22, 2024",
-    excerpt: "Last week we hosted React Conf 2024, a two-day conference in Henderson, Nevada...",
-    author: "John Doe", // Add author for each post
-    link: "/post/1",
-  },
-  {
-    title: "React Conf 2024 Recap",
-    date: "May 22, 2024",
-    excerpt: "Last week we hosted React Conf 2024, a two-day conference in Henderson, Nevada...",
-    author: "John Doe", // Add author for each post
-    link: "/post/1",
-  },
-  {
-    title: "React Conf 2024 Recap",
-    date: "May 22, 2024",
-    excerpt: "Last week we hosted React Conf 2024, a two-day conference in Henderson, Nevada...",
-    author: "John Doe", // Add author for each post
-    link: "/post/1",
-  },
-  {
-    title: "React Conf 2024 Recap",
-    date: "May 22, 2024",
-    excerpt: "Last week we hosted React Conf 2024, a two-day conference in Henderson, Nevada...",
-    author: "John Doe", // Add author for each post
-    link: "/post/1",
-  },
-  {
-    title: "React Conf 2024 Recap",
-    date: "May 22, 2024",
-    excerpt: "Last week we hosted React Conf 2024, a two-day conference in Henderson, Nevada...",
-    author: "John Doe", // Add author for each post
-    link: "/post/1",
-  },
-  {
-    title: "React Conf 2024 Recap",
-    date: "May 22, 2024",
-    excerpt: "Last week we hosted React Conf 2024, a two-day conference in Henderson, Nevada...",
-    author: "John Doe", // Add author for each post
-    link: "/post/1",
-  },
-  // Add more posts as needed...
-];
+const PostPage: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const { loading, post } = usePost(id === undefined ? "" : id);
 
-const topics = ["React", "CSS", "JavaScript", "Web Development", "Programming"];
-const authors = ["John Doe", "Jane Smith", "Alice Johnson", "Bob Brown"];
+  // Initialize Quill only when the post is loaded
+  useEffect(() => {
+    if (post) {
+      const quill = new Quill("#quill-viewer", {
+        theme: "snow",
+        readOnly: true,
+        modules: { toolbar: false },
+      });
+      quill.clipboard.dangerouslyPasteHTML(post.content);
+    }
+  }, [post]);
 
-const PostsPage: React.FC = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  // Loading state
+  if (loading) {
+    return (
+      <>
+      <Nav />
+      <div className="flex flex-col  p-8 lg:p-20 mt-10 lg:mt-0  h-screen text-white">
+        <div className="w-full  p-8">
+          <Skeleton height="36px" width="80%" className="mb-4" /> {/* Skeleton for title */}
+          <Skeleton height="20px" width="60%" className="mb-2" /> {/* Skeleton for author */}
+          <Skeleton height="12px" width="100%" className="my-4" /> {/* Skeleton for line */}
+          <Skeleton height="200px" className="my-4" /> {/* Skeleton for content */}
+        </div>
+      </div>
+      </>
+    );
+  }
+
+  if (!post) {
+    return <div className="text-red-500 text-center mt-5">Post not found.</div>;
+  }
 
   return (
     <>
       <Nav />
-      <div className="flex flex-col lg:flex-row min-h-screen text-white">
-        {/* Sidebar for Topics and Authors */}
-        <div className={`fixed lg:sticky top-0 lg:top-20 left-0 lg:left-auto w-4/5 lg:w-1/5 border border-stone-800 shadow-sm shadow-white rounded-lg p-5 h-screen mt-20 lg:mt-0 bg-black transition-transform transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}>
-          <button
-            className="lg:hidden absolute top-4 right-4 text-white"
-            onClick={() => setIsSidebarOpen(false)}
+      <div className="flex flex-col min-h-screen text-white bg-black">
+        <div className="flex-grow p-8 lg:p-20 mt-10 lg:mt-0">
+          <motion.div
+            className="border border-white p-6 rounded-lg shadow-lg mb-8 relative"
+            initial={{ opacity: 0, y: 20 }} // Initial state
+            animate={{ opacity: 1, y: 0 }} // Animate to this state
+            transition={{ duration: 0.5 }} // Transition duration
           >
-            Close
-          </button>
-          <div className="mb-10">
-            <h2 className="text-xl font-semibold mb-4">Topics</h2>
-            <ul className="flex flex-wrap gap-3">
-              {topics.map((topic, index) => (
-                <li key={index}>
-                  <Link
-                    to={`/topics/${topic.toLowerCase()}`}
-                    className="flex items-center bg-transparent text-white border border-white rounded-full py-1 px-3 transition duration-300 hover:bg-slate-200 hover:text-black"
-                  >
-                    {topic}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="mb-10">
-            <h2 className="text-xl font-semibold mb-4">Authors</h2>
-            <ul className="flex flex-wrap gap-3">
-              {authors.map((author, index) => (
-                <li key={index}>
-                  <Link
-                    to={`/author/${author.toLowerCase()}`}
-                    className="flex items-center bg-transparent text-white border border-white rounded-full py-1 px-3 transition duration-300 hover:bg-slate-200 hover:text-black"
-                  >
-                    {author}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* Main Content Section */}
-        <div className="flex-grow p-8 lg:p-16 mt-20 lg:mt-0"> {/* Adjusted for floating nav */}
-          <button
-            className="lg:hidden mb-4 text-white"
-            onClick={() => setIsSidebarOpen(true)}
-          >
-            Open Sidebar
-          </button>
-          <h1 className="text-3xl font-bold mb-6">Blog Posts</h1>
-          <div className="grid grid-cols-1 gap-6">
-            {posts.map((post, index) => (
-              <PostCard
-                key={index}
-                title={post.title}
-                excerpt={post.excerpt}
-                author={post.author}
-                date={post.date}
-                link={post.link}
-              />
-            ))}
-          </div>
+            <div className="flex justify-between items-start">
+              <div>
+                <h1 className="text-2xl font-bold mb-2">{post.title}</h1>
+                <p className="text-sm text-gray-400 mb-4">by {post.author.name}</p>
+              </div>
+              <button
+                className="bg-transparent border border-white text-white py-1 px-3 rounded-full hover:bg-white hover:text-black transition duration-300"
+                onClick={() => {
+                  navigator.clipboard.writeText(window.location.href);
+                  alert("Copied!");
+                }}
+              >
+                Share
+              </button>
+            </div>
+            <hr className="border-t border-white my-4" />
+            {/* Quill Viewer */}
+            <div id="quill-viewer" className="ql-container ql-snow" style={{ minHeight: "200px" }}></div>
+          </motion.div>
         </div>
       </div>
       <Footer />
@@ -135,4 +83,4 @@ const PostsPage: React.FC = () => {
   );
 };
 
-export default PostsPage;
+export default PostPage;

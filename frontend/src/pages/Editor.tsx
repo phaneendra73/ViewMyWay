@@ -23,12 +23,9 @@ const EditorPage: React.FC = () => {
           [{ list: 'ordered' }, { list: 'bullet' }],
           [{ script: 'sub' }, { script: 'super' }],
           [{ align: [] }],
-          ['clean'],
           ['code-block'],
           [{ direction: 'rtl' }],
           ['blockquote'],
-          ['formula'],
-          ['insert'],
         ],
       },
     });
