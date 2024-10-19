@@ -36,27 +36,79 @@ export interface Post {
 export const usePosts = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [posts, setPosts] = useState<Post[]>([]);
-  const [error, setError] = useState<string | null>(null); // Error state
-  const [token, setToken] = useState<string | null>(localStorage.getItem("ViewMyWay"));
-  const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(
+    localStorage.getItem("ViewMyWay")
+  );
 
   const fetchPosts = async () => {
+    // Check if token exists before fetching
+    if (!token) {
+      console.log(token)
+      setLoading(false); // Stop loading since we won't fetch
+      setError("Please log in to view posts."); // Set error message
+      return; // Exit the function early
+    }
+
+    setLoading(true); // Start loading state
+    setError(null); // Reset error state before the fetch
+
+    try {
+      const response = await axios.get(`${BACKEND_URL}/post`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the token in the request headers
+        },
+      });
+
+      console.log(response); // Log the response for debugging
+      setPosts(response.data); // Update the posts state with fetched data
+    } catch (error) {
+      console.error("Failed to fetch posts:", error); // Log error for debugging
+      setError(error instanceof Error ? error.message : "Failed to fetch posts. Please try again later.");
+    } finally {
+      setLoading(false); // Stop loading state regardless of success or failure
+    }
+  };
+
+  // This effect runs when the component mounts or when the token changes
+  useEffect(() => {
+    fetchPosts(); // Attempt to fetch posts
+  }, [token]); // Dependency array includes token
+
+  return {
+    loading,
+    posts,
+    error, // Expose error state
+    setToken, // Expose setToken to allow updating the token
+  };
+};
+
+export const usePost = (id: string) => {
+  const [loading, setLoading] = useState<boolean>(true);
+  const [post, setPost] = useState<Post>();
+  const [error, setError] = useState<string | null>(null); // Error state
+  const [token, setToken] = useState<string | null>(
+    localStorage.getItem("ViewMyWay")
+  );
+  const navigate = useNavigate();
+
+  const fetchPost = async () => {
     // Fetch posts only if the token is present
     if (!token) {
       navigate("/signin");
-      return; 
+      return;
     }
 
     setLoading(true); // Start loading state
     setError(null); // Reset error state before the fetch
     try {
-      const response = await axios.get(`${BACKEND_URL}/post`, {
+      const response = await axios.get(`${BACKEND_URL}/post/get/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`, // Set the Authorization header
         },
       });
       console.log(response);
-      setPosts(response.data); // Update the state with fetched posts
+      setPost(response.data); // Update the state with fetched posts
     } catch (error) {
       console.error("Failed to fetch posts:", error);
       setError("Failed to fetch posts. Please try again later."); // Set error message
@@ -67,61 +119,13 @@ export const usePosts = () => {
 
   // This effect runs on every render
   useEffect(() => {
-    fetchPosts(); // Fetch posts every time the component mounts or the token changes
+    fetchPost(); // Fetch posts every time the component mounts or the token changes
   }, [token]); // Dependency array with token
 
   return {
     loading,
-    posts,
-    error, // Expose error state
-    setToken, // Expose setToken to allow updating the token
+    post,
+    error,
+    setToken,
   };
 };
-
-
-export const usePost = (id: string) => {
-    const [loading, setLoading] = useState<boolean>(true);
-    const [post, setPost] = useState<Post>();
-    const [error, setError] = useState<string | null>(null); // Error state
-    const [token, setToken] = useState<string | null>(localStorage.getItem("ViewMyWay"));
-    const navigate = useNavigate();
-  
-    const fetchPost = async () => {
-      // Fetch posts only if the token is present
-      if (!token) {
-        navigate("/signin");
-        return; 
-      }
-  
-      setLoading(true); // Start loading state
-      setError(null); // Reset error state before the fetch
-      try {
-        const response = await axios.get(`${BACKEND_URL}/post/get/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`, // Set the Authorization header
-          },
-        });
-        console.log(response);
-        setPost(response.data); // Update the state with fetched posts
-      } catch (error) {
-        console.error("Failed to fetch posts:", error);
-        setError("Failed to fetch posts. Please try again later."); // Set error message
-      } finally {
-        setLoading(false); // Stop loading state
-      }
-    };
-  
-    // This effect runs on every render
-    useEffect(() => {
-      fetchPost(); // Fetch posts every time the component mounts or the token changes
-    }, [token]); // Dependency array with token
-  
-  
-    return {
-      loading,
-      post,
-      error,
-      setToken,
-    };
-  };
-  

@@ -5,7 +5,7 @@ import Signin from './pages/Signin';
 import Posts from './pages/Posts';
 import Home from './pages/Home';
 import Post from './pages/Post';
-import EditorPage from './pages/Editor';
+import AddOrEdit from './pages/AddOrEdit';
 import Skeleton from './Skeletons/Post';
 
 function App() {
@@ -22,78 +22,86 @@ function MainRoutes() {
   return (
     <AnimatePresence mode='wait'>
       <Routes location={location} key={location.key}> {/* Key added here */}
-        <Route 
-          path="/" 
+        <Route
+          path="/"
           element={
             <AnimatedPage>
               <Home />
             </AnimatedPage>
-          } 
+          }
         />
-        <Route 
-          path="/signup" 
+        <Route
+          path="/signup"
           element={
             <AnimatedPage>
               <Signup />
             </AnimatedPage>
-          } 
+          }
         />
-        <Route 
-          path="/signin" 
+        <Route
+          path="/signin"
           element={
             <AnimatedPage>
               <Signin />
             </AnimatedPage>
-          } 
+          }
         />
-        <Route 
-          path="/post/get/:id" 
+        <Route
+          path="/post/get/:id"
           element={
             <AnimatedPage>
               <Post />
             </AnimatedPage>
-          } 
+          }
         />
-        <Route 
-          path="/posts" 
+        <Route
+          path="/posts"
           element={
             <AnimatedPage>
               <Posts />
             </AnimatedPage>
-          } 
+          }
         />
-        <Route 
-          path="/edit" 
+        <Route
+          path="/create"
           element={
             <AnimatedPage>
-              <EditorPage />
+              <AddOrEdit />
             </AnimatedPage>
-          } 
+          }
         />
-         <Route 
-          path="/about" 
+        <Route
+          path="/Edit"
           element={
             <AnimatedPage>
-        <div className="flex flex-col p-8 lg:p-20 mt-10 lg:mt-0 h-screen text-white  mx-auto">
-  <div className="w-full p-8">
-    <Skeleton height="36px" width="60%" className="mb-4 mx-auto" /> {/* Skeleton for title */}
-    <Skeleton height="20px" width="60%" className="mb-2 mx-auto" /> {/* Skeleton for author */}
-    <Skeleton height="12px" width="100%" className="my-4 mx-auto" /> {/* Skeleton for line */}
-    <Skeleton height="200px" width="100%" className="my-4 mx-auto" /> {/* Skeleton for content */}
-  </div>
-</div>
+              <AddOrEdit />
+            </AnimatedPage>
+          }
+        />
+        <Route
+          path="/about"
+          element={
+            <AnimatedPage>
+              <div className="flex flex-col p-8 lg:p-20 mt-10 lg:mt-0 h-screen text-white  mx-auto">
+                <div className="w-full p-8">
+                  <Skeleton height="36px" width="60%" className="mb-4 mx-auto" /> {/* Skeleton for title */}
+                  <Skeleton height="20px" width="60%" className="mb-2 mx-auto" /> {/* Skeleton for author */}
+                  <Skeleton height="12px" width="100%" className="my-4 mx-auto" /> {/* Skeleton for line */}
+                  <Skeleton height="200px" width="100%" className="my-4 mx-auto" /> {/* Skeleton for content */}
+                </div>
+              </div>
 
             </AnimatedPage>
-          } 
-        /> 
+          }
+        />
       </Routes>
-      
+
     </AnimatePresence>
   );
 }
 
 // AnimatedPage component for animations
-const AnimatedPage = ({ children }:any) => {
+const AnimatedPage = ({ children }: any) => {
   return (
     <motion.div
       initial={{ opacity: 0, rotateY: 90 }} // Start state for entering

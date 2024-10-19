@@ -2,6 +2,7 @@ import Nav from "../components/Nav";
 import Footer from "../components/Footer";
 import Button from "../components/Button";
 import "../index.css";
+import TestSignInButton from "../components/TestSigninButton";
 
 function Home() {
   return (
@@ -46,8 +47,9 @@ function Home() {
               Sign Up
             </Button>
             <Button to="/signin">
-              Sign In
+              Login
             </Button>
+            <TestSignInButton ></TestSignInButton>
           </div>
         </div>
       </div>

@@ -38,10 +38,10 @@ const SignUp: React.FC = () => {
   const hitSignup = async (): Promise<void> => {
     const isValid = await validateInput();
     if (!isValid) return;
-if(postsignup.name){
-  setErrors((prev) => ({ ...prev, username: "User name is required" }));
-  return;
-}
+    if (postsignup.name) {
+      setErrors((prev) => ({ ...prev, username: "User name is required" }));
+      return;
+    }
     if (postsignup.password !== confPassword) {
       setErrors((prev) => ({ ...prev, confPassword: "Passwords do not match" }));
       return;
@@ -51,7 +51,7 @@ if(postsignup.name){
       const response = await axios.post(`${BACKEND_URL}/user/signup`, postsignup);
       // Store JWT in local storage
       localStorage.setItem("ViewMyWay", response.data.jwt);
-     
+
 
       setSuccess("Signup successful! Redirecting...");
       setErrors({}); // Clear any previous errors
@@ -64,7 +64,7 @@ if(postsignup.name){
       if (err.response && err.response.data) {
         const { error } = err.response.data;
         console.log(error);
-        setErrors({api:error}); // Set the new errors
+        setErrors({ api: error }); // Set the new errors
         setSuccess(""); // Clear any previous success messages
       } else {
         setErrors({ api: "An error occurred. Please try again." });
@@ -80,8 +80,8 @@ if(postsignup.name){
 
         <div className="flex flex-col lg:flex-row flex-grow items-center justify-center p-8 lg:p-16">
           <div className="flex lg:w-1/2 items-center justify-center mb-8 lg:mb-0">
-            <Quote 
-              initialMessage="Every journey begins with a single step. Take that step today!" 
+            <Quote
+              initialMessage="Every journey begins with a single step. Take that step today!"
               initialAuthor="Anonymous"
               fontSize={24}
             />
@@ -91,8 +91,8 @@ if(postsignup.name){
             <form className="w-full max-w-sm bg-black text-white">
               <h2 className="text-3xl font-bold mb-6">Sign Up</h2>
               <h3 className="text-lg font-bold mb-6">
-                Already have an account? 
-                <Link className="ml-2 text-white underline hover:text-blue-200" to="/signin">Sign In</Link>
+                Already have an account?
+                <Link className="ml-2 text-white underline hover:text-blue-200" to="/signin">Login</Link>
               </h3>
 
               <Input
@@ -103,7 +103,7 @@ if(postsignup.name){
                 value={postsignup.name}
                 errorMessage={errors.username} // Pass the error message
               />
-              
+
               <Input
                 type="email"
                 id="email"
@@ -112,7 +112,7 @@ if(postsignup.name){
                 value={postsignup.email}
                 errorMessage={errors.email} // Pass the error message
               />
-              
+
               <Input
                 type="password"
                 id="password"
@@ -121,12 +121,12 @@ if(postsignup.name){
                 value={postsignup.password}
                 errorMessage={errors.password} // Pass the error message
               />
-              
+
               <Input
                 type="password"
                 id="confirmPassword"
                 label="Confirm Password"
-                onChange={(e) => setConfPassword(e.target.value)} 
+                onChange={(e) => setConfPassword(e.target.value)}
                 value={confPassword}
                 errorMessage={errors.confPassword} // Pass the error message
               />

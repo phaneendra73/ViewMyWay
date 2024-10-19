@@ -48,13 +48,13 @@ const SignIn: React.FC = () => {
 
       // Navigate to the desired page (e.g., dashboard)
       setTimeout(() => {
-        navigate("/Edit"); // Change this to your desired route
+        navigate("/posts"); // Change this to your desired route
       }, 2000); // Optional: add a delay before navigating
     } catch (err: any) {
       if (err.response && err.response.data) {
         const { error } = err.response.data;
         console.log(error);
-        setErrors({api:error}); // Set the new errors
+        setErrors({ api: error }); // Set the new errors
         setSuccess(""); // Clear any previous success messages
       } else {
         setErrors({ api: "An error occurred. Please try again." });
@@ -70,8 +70,8 @@ const SignIn: React.FC = () => {
 
         <div className="flex flex-col lg:flex-row flex-grow items-center justify-center p-8 lg:p-16">
           <div className="flex lg:w-1/2 items-center justify-center mb-8 lg:mb-0">
-            <Quote 
-              initialMessage="Welcome back! Let's get you logged in." 
+            <Quote
+              initialMessage="Welcome back! Let's get you logged in."
               initialAuthor="Anonymous"
               fontSize={24}
             />
@@ -79,9 +79,9 @@ const SignIn: React.FC = () => {
 
           <div className="flex lg:w-1/2 items-center justify-center">
             <form className="w-full max-w-sm bg-black text-white">
-              <h2 className="text-3xl font-bold mb-6">Sign In</h2>
+              <h2 className="text-3xl font-bold mb-6">Login</h2>
               <h3 className="text-lg font-bold mb-6">
-                Don't have an account? 
+                Don't have an account?
                 <Link className="ml-2 text-white underline hover:text-blue-200" to="/signup">Sign Up</Link>
               </h3>
 
@@ -106,9 +106,8 @@ const SignIn: React.FC = () => {
               {errors.api && <p className="text-red-500 text-sm mt-1 mb-4">{errors.api}</p>}
 
               <Button type="button" className="w-full" onClick={hitSignIn}>
-                Sign In
+                Log In
               </Button>
-
               {success && <p className="text-green-500 mt-4">{success}</p>}
             </form>
           </div>

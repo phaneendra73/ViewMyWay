@@ -1,33 +1,43 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import Nav from "../components/Nav";
 import Notification from "../components/Notification";
 import PostCard from "../components/Postcard"; // Import your PostCard component
 import { usePosts } from "../hooks";
-import SkePosts from "../skeletons/Posts";
-
-
+import SkePosts from "../Skeletons/Posts";
 
 const topics = ["React", "CSS", "JavaScript", "Web Development", "Programming"];
 const authors = ["John Doe", "Jane Smith", "Alice Johnson", "Bob Brown"];
 
 const Posts: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const {loading, posts, error} = usePosts()
-  if(loading){
-    return <SkePosts/>
-    
+  const navigate = useNavigate(); // Use useNavigate instead of useHistory
+  const { loading, posts, error } = usePosts();
+
+  // Effect for redirecting if there's an authorization error
+  useEffect(() => {
+    if (error && (error.includes("Unauthorized") || error.includes("log in"))) {
+      const timer = setTimeout(() => {
+        navigate("/"); // Redirect to home after a short delay
+      }, 3000); // Adjust the delay as needed
+
+      return () => clearTimeout(timer); // Clear the timer on cleanup
+    }
+  }, [error, navigate]);
+
+  if (loading) {
+    return <SkePosts />;
   }
-  if(error){
-      return <>
-      <Notification 
-      message={error}
-      type="error"
-      onClose={()=>{
-        
-      }}></Notification>
-        </>
+
+  if (error) {
+    return (
+      <Notification
+        message={error}
+        type="error"
+        onClose={() => { }} // Optional close function
+      />
+    );
   }
 
   return (
@@ -75,7 +85,7 @@ const Posts: React.FC = () => {
         </div>
 
         {/* Main Content Section */}
-        <div className="flex-grow p-8 lg:p-16 mt-20 lg:mt-0"> {/* Adjusted for floating nav */}
+        <div className="flex-grow p-8 lg:p-16 mt-20 lg:mt-0">
           <button
             className="lg:hidden mb-4 text-white"
             onClick={() => setIsSidebarOpen(true)}
@@ -89,7 +99,7 @@ const Posts: React.FC = () => {
                 key={post.id}
                 title={post.title}
                 content={post.content}
-                author={post.author.name == null ? "Anonymous" : post.author.name}
+                author={post.author.name || "Anonymous"}
                 date={post.createdAt}
                 link={`/post/get/${post.id}`}
               />

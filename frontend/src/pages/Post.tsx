@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
@@ -12,6 +12,13 @@ import "../index.css";
 const PostPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { loading, post } = usePost(id === undefined ? "" : id);
+  const [copied, setCopied] = useState(false);
+
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000); // Hide after 2 seconds
+  };
 
   // Initialize Quill only when the post is loaded
   useEffect(() => {
@@ -29,15 +36,15 @@ const PostPage: React.FC = () => {
   if (loading) {
     return (
       <>
-      <Nav />
-      <div className="flex flex-col  p-8 lg:p-20 mt-10 lg:mt-0  h-screen text-white">
-        <div className="w-full  p-8">
-          <Skeleton height="36px" width="80%" className="mb-4" /> {/* Skeleton for title */}
-          <Skeleton height="20px" width="60%" className="mb-2" /> {/* Skeleton for author */}
-          <Skeleton height="12px" width="100%" className="my-4" /> {/* Skeleton for line */}
-          <Skeleton height="200px" className="my-4" /> {/* Skeleton for content */}
+        <Nav />
+        <div className="flex flex-col  p-8 lg:p-20 mt-10 lg:mt-0  h-screen text-white">
+          <div className="w-full  p-8">
+            <Skeleton height="36px" width="80%" className="mb-4" /> {/* Skeleton for title */}
+            <Skeleton height="20px" width="60%" className="mb-2" /> {/* Skeleton for author */}
+            <Skeleton height="12px" width="100%" className="my-4" /> {/* Skeleton for line */}
+            <Skeleton height="200px" className="my-4" /> {/* Skeleton for content */}
+          </div>
         </div>
-      </div>
       </>
     );
   }
@@ -62,15 +69,20 @@ const PostPage: React.FC = () => {
                 <h1 className="text-2xl font-bold mb-2">{post.title}</h1>
                 <p className="text-sm text-gray-400 mb-4">by {post.author.name}</p>
               </div>
-              <button
-                className="bg-transparent border border-white text-white py-1 px-3 rounded-full hover:bg-white hover:text-black transition duration-300"
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
-                  alert("Copied!");
-                }}
-              >
-                Share
-              </button>
+              <div className="relative">
+                {!copied && <button
+                  className="bg-transparent border border-white text-white py-1 px-3 rounded-full hover:bg-white hover:text-black transition duration-300"
+                  onClick={handleShare}
+                >
+                  Share
+                </button>}
+                {copied && (
+                  <div className="bg-transparent border border-white text-white py-1 px-3 rounded-full hover:bg-white hover:text-black transition duration-300"
+                  >
+                    Copied
+                  </div>
+                )}
+              </div>
             </div>
             <hr className="border-t border-white my-4" />
             {/* Quill Viewer */}

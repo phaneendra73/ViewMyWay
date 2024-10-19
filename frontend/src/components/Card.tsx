@@ -5,33 +5,25 @@ interface CardProps {
   title: string;
   description: string;
   link: string;
-  bgColor?: string; // Background color
-  className? : string // Row span
+  className?: string; // Additional class names
 }
 
 const Card: React.FC<CardProps> = ({
   title,
   description,
   link,
- // bgColor = "bg-gray-100", // Default background color
-  className=""
+  className = "",
 }) => {
   return (
-  
-      <div className={`relative rounded-lg shadow-md overflow-hidden ${className}`}>
-        <div className="relative z-10 p-4 bg-gray-100 bg-opacity-80 rounded-lg">
-          <h3 className="text-lg font-semibold text-black">{title}</h3>
-          <p className="text-sm text-gray-700">{description}</p>
-          <Link
-            to={link}
-            className="mt-3 inline-block px-4 py-2  bg-black text-white rounded-lg hover:bg-white hover:text-black transition duration-300"
-          >
-            Visit
-          </Link>
-        </div>
+    <Link
+      to={link}
+      className={`block rounded-lg overflow-hidden transition-transform duration-300 scale-90 hover:scale-95 ${className}`}
+    >
+      <div className="relative z-10 p-6 border border-slate-300 text-white bg-zinc-950  flex flex-col h-full hover:border-white transition-all duration-300">
+        <h3 className="text-lg font-semibold">{title}</h3>
+        <p className="text-sm text-gray-300 flex-1">{description}</p>
       </div>
-  
-    
+    </Link>
   );
 };
 

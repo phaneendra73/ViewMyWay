@@ -20,14 +20,14 @@ const PostCard: React.FC<PostCardProps> = ({
 }) => {
   return (
     <div className="flex flex-col gap-4 bg-black border border-stone-800 rounded-lg p-4 transition duration-300 hover:border-white shadow-sm shadow-white max-w-sm">
-       <div className="flex items-center space-x-2">
-  <p className="text-gray-700 font-bold text-xl bg-white rounded-full w-8  flex items-center justify-center">
-    {author[0]}
-  </p>
-  <p className="text-gray-500 text-xs">
-    <span className="text-white">{author}</span> on {date}
-  </p>
-</div>
+      <div className="flex items-center space-x-2">
+        <p className="text-gray-700 font-bold text-xl bg-white rounded-full w-8  flex items-center justify-center">
+          {author[0]}
+        </p>
+        <p className="text-gray-500 text-xs">
+          <span className="text-white">{author}</span> on {date}
+        </p>
+      </div>
 
       {/* Title and Image */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
@@ -39,13 +39,13 @@ const PostCard: React.FC<PostCardProps> = ({
           />
         )}
         <span className="text-xl font-bold text-white">
-        {title.length > 60 ? title.slice(0, 60) + "..." : title}
+          {title.length > 60 ? title.slice(0, 60) + "..." : title}
         </span>
 
       </div>
 
       {/* content */}
-      <p className="text-gray-400 leading-relaxed text-sm">{content.slice(0,90)}...</p>
+      <p className="text-gray-400 leading-relaxed text-sm">{content.slice(0, 90)}...</p>
 
 
 
@@ -66,7 +66,7 @@ const PostCard: React.FC<PostCardProps> = ({
             aria-hidden="true"
             focusable="false"
           >
-            <path  
+            <path
               transform="scale(0.5)"
               className="blueprint_een"
               d="M28,0H8L4.293,3.707C4.105,3.895,4,4.149,4,4.414V31c0,0.552,0.448,1,1,1h20
@@ -75,7 +75,10 @@ const PostCard: React.FC<PostCardProps> = ({
             />
           </svg>
         </Link>
-        <div className="flex items-center bg-transparent  py-1 px-4 transition duration-300 text-sm">{content.length/100} min read</div>
+        <div className="flex items-center bg-transparent py-1 px-4 transition duration-300 text-sm">
+          {Math.ceil(content.length / 100)} min read
+        </div>
+
       </div>
     </div>
   );
