@@ -1,58 +1,52 @@
-import { Hono } from 'hono';
-import { verify } from 'hono/jwt';
-import { PrismaClient } from '@prisma/client/edge';
-import { withAccelerate } from '@prisma/extension-accelerate';
-import { postSchema } from '@phaneendra73/blog-common';
+import { Hono } from "hono";
+import { verify } from "hono/jwt";
+import { PrismaClient } from "@prisma/client/edge";
+import { withAccelerate } from "@prisma/extension-accelerate";
+import { postSchema } from "@phaneendra73/blog-common";
 
 // Initialize Prisma Client once
-
 
 export const postRoutes = new Hono<{
   Bindings: {
     DATABASE_URL: string;
     JWT_SECRET: string;
   };
-  Variables:{
-    UserId:string;
-  }
+  Variables: {
+    UserId: string;
+  };
 }>();
 
-
-
 // Middleware to apply JWT verification to all routes
-postRoutes.use('/*', async (c, next) => {
-  const authHeader = c.req.header('Authorization');
-  
+postRoutes.use("/*", async (c, next) => {
+  const authHeader = c.req.header("Authorization");
+
   if (!authHeader) {
-    return c.json({ error: 'Unauthorized: No token provided' }, 401);
+    return c.json({ error: "Unauthorized: No token provided" }, 401);
   }
-console.log(authHeader)
-  const token = authHeader.split(' ')[1]; 
+  const token = authHeader.split(" ")[1];
 
   try {
     const user = await verify(token, c.env.JWT_SECRET);
-    
     if (user) {
-      c.set('UserId', String(user.Id)); // Set user ID for later use in the request
+      c.set("UserId", String(user.id)); // Set user ID for later use in the request
       await next(); // Proceed to the next middleware or route handler
     } else {
-      return c.json({ error: 'Unauthorized: Invalid token' }, 401);
+      return c.json({ error: "Unauthorized: Invalid token" }, 401);
     }
   } catch (err) {
     console.error(err); // Log the error for debugging
-    return c.json({ error: 'Unauthorized: Token verification failed' }, 401);
+    return c.json({ error: "Unauthorized: Token verification failed" }, 401);
   }
 });
 
-
 // Get all posts
-postRoutes.get('/', async (c) => {
+postRoutes.get("/", async (c) => {
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
 
-
   const posts = await prisma.post.findMany({
+    where: { published: true },
     include: {
       author: true,
       tags: true,
@@ -62,33 +56,37 @@ postRoutes.get('/', async (c) => {
 });
 
 // Create a new post
-postRoutes.post('/create', async (c) => {
+postRoutes.post("/create", async (c) => {
   const body = await c.req.json();
   const parsedBody = postSchema.safeParse(body);
+  console.log(parsedBody);
 
   if (!parsedBody.success) {
-    return c.json({ error: 'Invalid input', details: parsedBody.error.errors }, 400);
+    return c.json(
+      { error: "Invalid input", details: parsedBody.error.errors },
+      400
+    );
   }
 
   const { title, content, published, tags } = parsedBody.data;
-  const userId = c.get('UserId');
+  const userId = c.get("UserId");
 
   if (!userId) {
-    return c.json({ error: 'Unauthorized' }, 401);
+    return c.json({ error: "Unauthorized" }, 401);
   }
+  console.log("userId", userId);
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
   // Create the post with associated tags
   const post = await prisma.post.create({
-  
     data: {
       title,
       content,
       published: published ?? false,
       authorId: userId,
       tags: {
-        connect: (tags || []).map((tagId : any) => ({ id: tagId })),
+        connect: (tags || []).map((tagId: any) => ({ id: tagId })),
       },
     },
   });
@@ -97,11 +95,12 @@ postRoutes.post('/create', async (c) => {
 });
 
 // Get a post by ID
-postRoutes.get('/get/:id', async (c) => {
+postRoutes.get("/get/:id", async (c) => {
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
   const { id } = c.req.param();
+  console.log(id);
   const post = await prisma.post.findUnique({
     where: { id },
     include: {
@@ -111,24 +110,49 @@ postRoutes.get('/get/:id', async (c) => {
   });
 
   if (!post) {
-    return c.json({ error: 'Post not found' }, 404);
+    return c.json({ error: "Post not found" }, 404);
   }
 
   return c.json(post);
 });
 
+// Fetch all posts by the user
+postRoutes.get("/myposts", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  const userId = c.get("UserId");
+
+  const posts = await prisma.post.findMany({
+    where: { authorId: userId },
+    include: {
+      tags: true,
+    },
+  });
+
+  if (!posts || posts.length === 0) {
+    return c.json({ error: "No posts found for this user" }, 404);
+  }
+
+  return c.json(posts);
+});
+
 // Update a post by ID
-postRoutes.put('/update/:id', async (c) => {
+postRoutes.put("/update/:id", async (c) => {
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
   const { id } = c.req.param();
-  const userId = c.get('UserId');
+  const userId = c.get("UserId");
   const body = await c.req.json();
   const parsedBody = postSchema.safeParse(body);
 
   if (!parsedBody.success) {
-    return c.json({ error: 'Invalid input', details: parsedBody.error.errors }, 400);
+    return c.json(
+      { error: "Invalid input", details: parsedBody.error.errors },
+      400
+    );
   }
 
   const { title, content, published, tags } = parsedBody.data;
@@ -140,17 +164,16 @@ postRoutes.put('/update/:id', async (c) => {
       authorId: true,
       title: true,
       content: true,
-      published: true,
       tags: true,
     },
   });
 
   if (!post) {
-    return c.json({ error: 'Post not found' }, 404);
+    return c.json({ error: "Post not found" }, 404);
   }
 
   if (post.authorId !== userId) {
-    return c.json({ error: 'Unauthorized to update this post' }, 403);
+    return c.json({ error: "Unauthorized to update this post" }, 403);
   }
 
   // Proceed with updating the post if the user is the author
@@ -160,9 +183,11 @@ postRoutes.put('/update/:id', async (c) => {
       title,
       content,
       published: published ?? false,
-      tags: tags ? {
-        set: tags.map((tagId: any) => ({ id: tagId })),
-      } : undefined,
+      tags: tags
+        ? {
+            set: tags.map((tagId: any) => ({ id: tagId })),
+          }
+        : undefined,
     },
     include: {
       tags: true,
@@ -173,46 +198,38 @@ postRoutes.put('/update/:id', async (c) => {
 });
 
 // delete a post by ID
-postRoutes.delete('/delete/:id', async (c) => {
+postRoutes.put("/delete/:id", async (c) => {
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
   const { id } = c.req.param();
-  const userId = c.get('UserId');
+  const { published } = await c.req.json(); // Get published status from request body
+  const userId = c.get("UserId");
 
   // Check if the post exists and retrieve the author ID
   const post = await prisma.post.findUnique({
     where: { id },
     select: {
       authorId: true,
-      title: true,
-      content: true,
-      published: true,
-      tags: true,
     },
   });
 
   if (!post) {
-    return c.json({ error: 'Post not found' }, 404);
+    return c.json({ error: "Post not found" }, 404);
   }
 
   if (post.authorId !== userId) {
-    return c.json({ error: 'Unauthorized to delete this post' }, 403);
+    return c.json({ error: "Unauthorized to update this post" }, 403);
   }
 
-  // Update the post to set published to false instead of deleting
-  const updatedPost = await prisma.post.update({
+  // Update the post to set published status
+  await prisma.post.update({
     where: { id },
-    data: {
-      published: false, // Set published to false to "delete" the post
-    },
-    include: {
-      tags: true,
-    },
+    data: { published },
   });
-  return c.json(post);
-});
 
+  return c.json({ message: "Post updated successfully" });
+});
 
 /* 
 pagination code for get all the posts 

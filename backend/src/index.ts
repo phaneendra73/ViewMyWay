@@ -2,12 +2,14 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors'
 import { userRoutes } from './routes/user';
 import { postRoutes } from './routes/post';
+import { tagRoutes } from './routes/tag';
 
 const app = new Hono();
 app.use('/*', cors())
 // Define your specific routes
 app.route('/api/v1/user', userRoutes);
 app.route('/api/v1/post', postRoutes);
+app.route('/api/v1/tag', tagRoutes);
 
 // Catch-all route for unmatched routes
 app.notFound((c) => {
