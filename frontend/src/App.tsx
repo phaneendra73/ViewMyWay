@@ -5,8 +5,10 @@ import Signin from './pages/Signin';
 import Posts from './pages/Posts';
 import Home from './pages/Home';
 import Post from './pages/Post';
-import AddOrEdit from './pages/AddOrEdit';
-import Skeleton from './Skeletons/Post';
+import Create from './pages/Create';
+import About from './pages/About';
+import MyPosts from './pages/MyPosts'
+import Edit from './pages/Edit';
 
 function App() {
   return (
@@ -63,18 +65,26 @@ function MainRoutes() {
           }
         />
         <Route
-          path="/create"
+          path="/post/create"
           element={
             <AnimatedPage>
-              <AddOrEdit />
+              <Create />
             </AnimatedPage>
           }
         />
         <Route
-          path="/Edit"
+          path="/post/myposts"
           element={
             <AnimatedPage>
-              <AddOrEdit />
+              <MyPosts />
+            </AnimatedPage>
+          }
+        />
+        <Route
+          path="/post/edit/:id"
+          element={
+            <AnimatedPage>
+              <Edit />
             </AnimatedPage>
           }
         />
@@ -82,15 +92,7 @@ function MainRoutes() {
           path="/about"
           element={
             <AnimatedPage>
-              <div className="flex flex-col p-8 lg:p-20 mt-10 lg:mt-0 h-screen text-white  mx-auto">
-                <div className="w-full p-8">
-                  <Skeleton height="36px" width="60%" className="mb-4 mx-auto" /> {/* Skeleton for title */}
-                  <Skeleton height="20px" width="60%" className="mb-2 mx-auto" /> {/* Skeleton for author */}
-                  <Skeleton height="12px" width="100%" className="my-4 mx-auto" /> {/* Skeleton for line */}
-                  <Skeleton height="200px" width="100%" className="my-4 mx-auto" /> {/* Skeleton for content */}
-                </div>
-              </div>
-
+              <About />
             </AnimatedPage>
           }
         />

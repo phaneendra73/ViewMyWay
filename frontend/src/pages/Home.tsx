@@ -2,7 +2,7 @@ import Nav from "../components/Nav";
 import Footer from "../components/Footer";
 import Button from "../components/Button";
 import "../index.css";
-import TestSignInButton from "../components/TestSigninButton";
+import GuestLogin from "../components/GuestLogin";
 
 function Home() {
   return (
@@ -49,7 +49,7 @@ function Home() {
             <Button to="/signin">
               Login
             </Button>
-            <TestSignInButton ></TestSignInButton>
+            <GuestLogin ></GuestLogin>
           </div>
         </div>
       </div>
