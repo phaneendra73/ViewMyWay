@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Card from "./Card";
+import NavCard from "./NavCard";
 
 function Nav() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -119,9 +119,16 @@ function Nav() {
         style={{ transitionProperty: "max-height, opacity" }}
       >
         <div className={`flex flex-col items-center justify-center space-y-6 h-screen p-6`}>
-          <Link to="/" className="hover:text-gray-300 text-lg">
+          <Link to="/posts" className="hover:text-gray-300 text-lg">
             Posts
           </Link>
+          <Link to="/post/create" className="hover:text-gray-300 text-lg">
+            Create Post
+          </Link>
+          <Link to="/post/myposts" className="hover:text-gray-300 text-lg">
+            My Posts
+          </Link>
+
           {isAuthenticated ? (
             <button onClick={handleLogout} className="hover:text-gray-300 hover:border text-lg">
               Logout
@@ -132,7 +139,7 @@ function Nav() {
                 Sign Up
               </Link>
               <Link to="/signin" className="hover:text-gray-300 text-lg">
-                Sign In
+                Login
               </Link>
             </>
           )}
@@ -243,36 +250,41 @@ function Nav() {
           onMouseEnter={handleMouseEnterHome}
           onMouseLeave={handleMouseLeaveHome}
         >
-          <div className="grid grid-cols-2 ">
-            {/* Tall Card */}
-            <Card
-              title="Read Posts"
-              description="Explore various posts and articles."
-              link="/posts"
-              className="col-span-2 row-span-2 h-42" // Spans across both columns and taller
-            />
-            {/* Medium Card */}
-            <Card
-              title="Create Posts"
-              description="Share your thoughts and insights."
-              link="/create"
-              className="col-span-1 row-span-1 h-32" // Shorter card
-            />
-            {/* Small Card */}
-            <Card
-              title="About"
-              description="Learn more about this blog."
-              link="/about"
-              className="col-span-1 row-span-1 h-32" // Shorter card
-            />
-            {/* Tall Card */}
-            <Card
+          <div className="grid grid-cols-3 gap-4">
+            {/* First Column: Three Cards */}
+            <div className="flex flex-col gap-4">
+              <NavCard
+                title="Read Posts"
+                description="Dive into a collection of posts ."
+                link="/posts"
+                className="h-20"
+              />
+              <NavCard
+                title="Create Posts"
+                description="Unleash your creativity by sharing."
+                link="/post/create"
+                className="h-20"
+              />
+              <NavCard
+                title="About"
+                description="Discover the mission and vision behind this blog."
+                link="/about"
+                className="h-20"
+              />
+            </div>
+
+            {/* Second Column: Single Card */}
+
+            <NavCard
               title="My Posts"
-              description="Manage and edit your existing posts."
-              link="/my-posts"
-              className="col-span-2 row-span-1 h-48" // Spans across both columns but shorter
+              description="Easily manage and edit your existing posts. Access your published articles and gain insights into their performance. You can publish or unpublish content with a single click, ensuring your readers always see the latest updates. Edit posts to refine your thoughts and keep your content fresh."
+              link="/post/myposts"
+              className="h-60 col-span-2"
             />
+
+
           </div>
+
 
         </div>
       </div>

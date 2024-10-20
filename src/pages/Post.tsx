@@ -67,7 +67,7 @@ const PostPage: React.FC = () => {
             <div className="flex justify-between items-start">
               <div>
                 <h1 className="text-2xl font-bold mb-2">{post.title}</h1>
-                <p className="text-sm text-gray-400 mb-4">by {post.author.name}</p>
+                <p className="text-sm text-gray-400 mb-4">by {post?.author?.name || " "}</p>
               </div>
               <div className="relative">
                 {!copied && <button

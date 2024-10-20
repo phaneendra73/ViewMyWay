@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 
 // Define the NotificationProps interface for type checking
 interface NotificationProps {
-  message: string;
+  message: string | null;
   type: 'success' | 'error' | 'unauthorized';
   onClose: () => void;
   duration?: number;

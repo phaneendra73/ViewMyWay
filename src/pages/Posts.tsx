@@ -1,28 +1,32 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import Nav from "../components/Nav";
 import Notification from "../components/Notification";
 import PostCard from "../components/Postcard"; // Import your PostCard component
-import { usePosts } from "../hooks";
+import { usePosts, useTags } from "../hooks";
 import SkePosts from "../Skeletons/Posts";
 
-const topics = ["React", "CSS", "JavaScript", "Web Development", "Programming"];
-const authors = ["John Doe", "Jane Smith", "Alice Johnson", "Bob Brown"];
+// Define Tag interface
+interface Tag {
+  id: number
+  name: string;
+}
 
 const Posts: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const navigate = useNavigate(); // Use useNavigate instead of useHistory
+  const [selectedTag, setSelectedTag] = useState<number | null>(null); // State for selected tag
+  const navigate = useNavigate();
   const { loading, posts, error } = usePosts();
+  const { tags, tagerror } = useTags();
 
-  // Effect for redirecting if there's an authorization error
   useEffect(() => {
     if (error && (error.includes("Unauthorized") || error.includes("log in"))) {
       const timer = setTimeout(() => {
-        navigate("/"); // Redirect to home after a short delay
-      }, 3000); // Adjust the delay as needed
+        navigate("/");
+      }, 3000);
 
-      return () => clearTimeout(timer); // Clear the timer on cleanup
+      return () => clearTimeout(timer);
     }
   }, [error, navigate]);
 
@@ -30,21 +34,26 @@ const Posts: React.FC = () => {
     return <SkePosts />;
   }
 
-  if (error) {
+  if (error || tagerror) {
     return (
       <Notification
-        message={error}
+        message={error || tagerror}
         type="error"
         onClose={() => { }} // Optional close function
       />
     );
   }
 
+  // Filter posts based on selected tag
+  const filteredPosts = selectedTag
+    ? posts.filter(post => post.tags?.some(tag => tag.id === selectedTag))
+    : posts;
+
   return (
     <>
       <Nav />
       <div className="flex flex-col lg:flex-row min-h-screen text-white">
-        {/* Sidebar for Topics and Authors */}
+        {/* Sidebar for Topics and Tags */}
         <div className={`fixed lg:sticky top-0 lg:top-20 left-0 lg:left-auto w-4/5 lg:w-1/5 border border-stone-800 shadow-sm shadow-white rounded-lg p-5 h-screen mt-20 lg:mt-0 bg-black transition-transform transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}>
           <button
             className="lg:hidden absolute top-4 right-4 text-white"
@@ -55,29 +64,15 @@ const Posts: React.FC = () => {
           <div className="mb-10">
             <h2 className="text-xl font-semibold mb-4">Topics</h2>
             <ul className="flex flex-wrap gap-3">
-              {topics.map((topic, index) => (
-                <li key={index}>
-                  <Link
-                    to={`/topics/${topic.toLowerCase()}`}
-                    className="flex items-center bg-transparent text-white border border-white rounded-full py-1 px-3 transition duration-300 hover:bg-slate-200 hover:text-black"
+              {(tags || []).map((tag: Tag) => (  // Ensure tags is treated as an array
+                <li key={tag.id}>
+                  <button
+                    className={`flex items-center rounded-full py-1 px-3 border border-white
+                    ${selectedTag === tag.id ? "font-bold bg-white text-black" : "bg-black text-white"}`}
+                    onClick={() => setSelectedTag(selectedTag === tag.id ? null : tag.id)}
                   >
-                    {topic}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="mb-10">
-            <h2 className="text-xl font-semibold mb-4">Authors</h2>
-            <ul className="flex flex-wrap gap-3">
-              {authors.map((author, index) => (
-                <li key={index}>
-                  <Link
-                    to={`/author/${author.toLowerCase()}`}
-                    className="flex items-center bg-transparent text-white border border-white rounded-full py-1 px-3 transition duration-300 hover:bg-slate-200 hover:text-black"
-                  >
-                    {author}
-                  </Link>
+                    {tag.name}
+                  </button>
                 </li>
               ))}
             </ul>
@@ -94,12 +89,12 @@ const Posts: React.FC = () => {
           </button>
           <h1 className="text-2xl font-bold mb-6">Blog Posts</h1>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {posts.map((post) => (
+            {filteredPosts.map((post) => (
               <PostCard
                 key={post.id}
                 title={post.title}
                 content={post.content}
-                author={post.author.name || "Anonymous"}
+                author={post?.author?.name || "Anonymous"}
                 date={post.createdAt}
                 link={`/post/get/${post.id}`}
               />
